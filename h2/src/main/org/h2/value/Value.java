@@ -265,9 +265,13 @@ public abstract class Value extends VersionedValue<Value> implements HasSQL, Typ
     public static final int ROW = ARRAY + 1;
 
     /**
+     * The value type for GPS COORDINATES values.
+     */
+    public static final int GPS_COORDINATE = ROW + 1;
+    /**
      * The number of value types.
      */
-    public static final int TYPE_COUNT = ROW + 1;
+    public static final int TYPE_COUNT = GPS_COORDINATE + 1;
 
     /**
      * Group for untyped NULL data type.
@@ -365,7 +369,7 @@ public abstract class Value extends VersionedValue<Value> implements HasSQL, Typ
             "INTERVAL DAY TO HOUR", "INTERVAL DAY TO MINUTE", "INTERVAL DAY TO SECOND", //
             "INTERVAL HOUR TO MINUTE", "INTERVAL HOUR TO SECOND", "INTERVAL MINUTE TO SECOND", //
             "JAVA_OBJECT", "ENUM", "GEOMETRY", "JSON", "UUID", //
-            "ARRAY", "ROW", //
+            "ARRAY", "ROW", "GPS_COORDINATE"//
     };
 
     /**
@@ -1181,6 +1185,8 @@ public abstract class Value extends VersionedValue<Value> implements HasSQL, Typ
             return convertToArray(targetType, provider, conversionMode, column);
         case ROW:
             return convertToRow(targetType, provider, conversionMode, column);
+        case GPS_COORDINATE:
+          return convertToGpsCoordinate(targetType, conversionMode, column);
         default:
             throw getDataConversionError(targetValueType);
         }
@@ -2356,6 +2362,31 @@ public abstract class Value extends VersionedValue<Value> implements HasSQL, Typ
         }
         return result;
     }
+
+    
+    private ValueGpsCoordinate convertToGpsCoordinate(TypeInfo targetType, int conversionMode, Object column) {
+      ValueGpsCoordinate v;
+      
+      switch (getValueType()) {
+      case GPS_COORDINATE:
+          v = (ValueGpsCoordinate) this;
+          break;
+
+      case CHAR:
+      case VARCHAR:
+      case VARCHAR_IGNORECASE:
+          String val = getString();
+          if (!ValueGpsCoordinate.validate(val)) {
+            throw getDataConversionError(GPS_COORDINATE);
+          }
+          v = (ValueGpsCoordinate)ValueGpsCoordinate.get(val);
+          break;
+
+      default:
+          throw getDataConversionError(GPS_COORDINATE);
+      }
+      return v;
+  }
 
     private ValueJson convertToJson(TypeInfo targetType, int conversionMode, Object column) {
         ValueJson v;

@@ -187,11 +187,14 @@ public class DataType {
         dataType.params = "ELEMENT [,...]";
         add(Value.ENUM, Types.OTHER, dataType, "ENUM");
         add(Value.GEOMETRY, Types.OTHER, createGeometry(), "GEOMETRY");
+        
         add(Value.JSON, Types.OTHER, createString(true, false, "JSON '", "'"), "JSON");
+
         dataType = new DataType();
         dataType.prefix = dataType.suffix = "'";
         dataType.defaultPrecision = dataType.maxPrecision = dataType.minPrecision = ValueUuid.PRECISION;
         add(Value.UUID, Types.BINARY, dataType, "UUID");
+
         dataType = new DataType();
         dataType.prefix = "ARRAY[";
         dataType.suffix = "]";
@@ -204,7 +207,10 @@ public class DataType {
         dataType.suffix = ")";
         dataType.params = "NAME DATA_TYPE [,...]";
         add(Value.ROW, Types.OTHER, dataType, "ROW");
+        
+        add(Value.GPS_COORDINATE, Types.OTHER, createString(false, false, "'", "'"), "GPS_COORDINATE");
     }
+    
 
     private static void addInterval(int type) {
         IntervalQualifier qualifier = IntervalQualifier.valueOf(type - Value.INTERVAL_YEAR);

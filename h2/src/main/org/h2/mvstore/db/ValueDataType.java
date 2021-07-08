@@ -50,6 +50,7 @@ import org.h2.value.ValueDate;
 import org.h2.value.ValueDecfloat;
 import org.h2.value.ValueDouble;
 import org.h2.value.ValueGeometry;
+import org.h2.value.ValueGpsCoordinate;
 import org.h2.value.ValueInteger;
 import org.h2.value.ValueInterval;
 import org.h2.value.ValueJavaObject;
@@ -114,6 +115,7 @@ public final class ValueDataType extends BasicDataType<Value> implements Statefu
     private static final byte INT_NEG = 66;
     private static final byte BIGINT_NEG = 67;
     private static final byte VARCHAR_0_31 = 68;
+    private static final byte GPS_COORDINATE = 69;
     private static final int VARBINARY_0_31 = 100;
     // 132 was used for SPATIAL_KEY_2D
     // 133 was used for CUSTOM_DATA_TYPE
@@ -536,6 +538,10 @@ public final class ValueDataType extends BasicDataType<Value> implements Statefu
         case Value.JSON:
             writeBinary((byte) JSON, buff, v);
             break;
+        case Value.GPS_COORDINATE:
+          writeString(buff.put(GPS_COORDINATE), v.getString());
+          //writeBinary((byte) GPS_COORDINATE, buff, v);
+          break;
         default:
             throw DbException.getInternalError("type=" + v.getValueType());
         }
@@ -751,6 +757,8 @@ public final class ValueDataType extends BasicDataType<Value> implements Statefu
             return ValueGeometry.get(readVarBytes(buff));
         case JSON:
             return ValueJson.getInternal(readVarBytes(buff));
+        case GPS_COORDINATE:
+          return ValueGpsCoordinate.get(readString(buff));
         default:
             if (type >= INT_0_15 && type < INT_0_15 + 16) {
                 int i = type - INT_0_15;

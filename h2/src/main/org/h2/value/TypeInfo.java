@@ -196,6 +196,11 @@ public class TypeInfo extends ExtTypeInfo implements Typed {
      * UUID type with parameters.
      */
     public static final TypeInfo TYPE_UUID;
+    
+    /**
+     * GPS_COORDINATE type with parameters.
+     */
+    public static final TypeInfo TYPE_GPS_COORDINATE;
 
     /**
      * ARRAY type with unknown parameters.
@@ -268,6 +273,7 @@ public class TypeInfo extends ExtTypeInfo implements Typed {
         infos[Value.GEOMETRY] = TYPE_GEOMETRY = new TypeInfo(Value.GEOMETRY);
         infos[Value.JSON] = TYPE_JSON = new TypeInfo(Value.JSON);
         infos[Value.UUID] = TYPE_UUID = new TypeInfo(Value.UUID);
+        infos[Value.GPS_COORDINATE] = TYPE_GPS_COORDINATE = new TypeInfo(Value.GPS_COORDINATE);
         // COLLECTION
         infos[Value.ARRAY] = TYPE_ARRAY_UNKNOWN = new TypeInfo(Value.ARRAY);
         infos[Value.ROW] = TYPE_ROW_EMPTY = new TypeInfo(Value.ROW, -1L, -1, //
@@ -487,6 +493,14 @@ public class TypeInfo extends ExtTypeInfo implements Typed {
                 precision = Constants.MAX_STRING_LENGTH;
             }
             return new TypeInfo(Value.JSON, precision);
+        case Value.GPS_COORDINATE:
+          if (precision < 1) {
+              return TYPE_GPS_COORDINATE;
+          } else if (precision > Constants.MAX_STRING_LENGTH) {
+              precision = Constants.MAX_STRING_LENGTH;
+          }
+          return new TypeInfo(Value.GPS_COORDINATE, precision);
+            
         case Value.ARRAY:
             if (!(extTypeInfo instanceof TypeInfo)) {
                 throw new IllegalArgumentException();
@@ -979,6 +993,8 @@ public class TypeInfo extends ExtTypeInfo implements Typed {
         case Value.GEOMETRY:
         case Value.JSON:
             return precision >= 0L ? precision : Constants.MAX_STRING_LENGTH;
+        case Value.GPS_COORDINATE:
+          return precision >= 0L ? precision : Constants.MAX_STRING_LENGTH;
         case Value.CLOB:
         case Value.BLOB:
             return precision >= 0L ? precision : Long.MAX_VALUE;
@@ -1093,6 +1109,7 @@ public class TypeInfo extends ExtTypeInfo implements Typed {
         case Value.ENUM:
         case Value.GEOMETRY:
         case Value.JSON:
+        case Value.GPS_COORDINATE:
         case Value.UUID:
         case Value.ARRAY:
         case Value.ROW:
@@ -1143,6 +1160,8 @@ public class TypeInfo extends ExtTypeInfo implements Typed {
         case Value.VARCHAR_IGNORECASE:
         case Value.JSON:
             return precision >= 0 ? (int) precision : Constants.MAX_STRING_LENGTH;
+        case Value.GPS_COORDINATE:
+          return precision >= 0 ? (int) precision : Constants.MAX_STRING_LENGTH;
         case Value.CLOB:
             return precision >= 0 && precision <= Integer.MAX_VALUE ? (int) precision : Integer.MAX_VALUE;
         case Value.BINARY:
@@ -1236,6 +1255,7 @@ public class TypeInfo extends ExtTypeInfo implements Typed {
         case Value.BLOB:
         case Value.JAVA_OBJECT:
         case Value.JSON:
+        case Value.GPS_COORDINATE:
             builder.append(Value.getTypeName(valueType));
             if (precision >= 0L) {
                 builder.append('(').append(precision).append(')');
