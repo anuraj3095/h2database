@@ -229,5 +229,10 @@ public enum AggregateType {
      * The aggregate type for JSON_ARRAYAGG(expression).
      */
     JSON_ARRAYAGG,
+    
+    /**
+     * The aggregate type for GPS_CENTROID(expression).
+     */
+    GPS_CENTROID,
 
 }

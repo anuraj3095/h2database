@@ -176,6 +176,8 @@ public class Aggregate extends AbstractAggregate implements ExpressionWithFlags 
 
         addAggregate("JSON_OBJECTAGG", AggregateType.JSON_OBJECTAGG);
         addAggregate("JSON_ARRAYAGG", AggregateType.JSON_ARRAYAGG);
+        
+        addAggregate("GPS_CENTROID", AggregateType.GPS_CENTROID);
     }
 
     private static void addAggregate(String name, AggregateType type) {
@@ -489,6 +491,8 @@ public class Aggregate extends AbstractAggregate implements ExpressionWithFlags 
         case JSON_OBJECTAGG:
             // ROW(key, value) are collected, so NULL values can't be passed
             return new AggregateDataCollecting(distinct, false, NullCollectionMode.USED_OR_IMPOSSIBLE);
+        case GPS_CENTROID:
+          return new AggregateDataCollecting(false, false, NullCollectionMode.IGNORED);
         default:
             throw DbException.getInternalError("type=" + aggregateType);
         }
@@ -688,6 +692,10 @@ public class Aggregate extends AbstractAggregate implements ExpressionWithFlags 
             }
             return JsonConstructorUtils.jsonObjectFinish(baos, flags);
         }
+        case GPS_CENTROID: {
+          AggregateDataCollecting c = (AggregateDataCollecting) data;
+          return collect(session, c, new AggregateDataGPSCentroid());
+      }
         default:
             // Avoid compiler warning
         }
@@ -1063,6 +1071,9 @@ public class Aggregate extends AbstractAggregate implements ExpressionWithFlags 
         case JSON_ARRAYAGG:
             type = TypeInfo.TYPE_JSON;
             break;
+        case GPS_CENTROID:
+          type = TypeInfo.TYPE_GPS_COORDINATE;
+          break;
         default:
             throw DbException.getInternalError("type=" + aggregateType);
         }
