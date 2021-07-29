@@ -3874,6 +3874,10 @@ public class Parser {
       readJsonObjectFunctionFlags(r, true);
       break;
     }
+    case GPS_CENTROID: {
+       r = new Aggregate(AggregateType.GPS_CENTROID, new Expression[] {readExpression()}, currentSelect, false);
+       break;
+     }
     default:
       boolean distinct = readDistinctAgg();
       r = new Aggregate(aggregateType, new Expression[] { readExpression() }, currentSelect, distinct);
